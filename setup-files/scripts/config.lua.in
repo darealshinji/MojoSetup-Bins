@@ -1,15 +1,15 @@
-local INSTALL_SIZE = @SIZE@ -- Change to the size of the data folder in bytes
-local _ = MojoSetup.translate
+ -- This file will be used by create-package.sh as an input.
 
-local app_title = '@FULLNAME@' -- Change this to the application's full name
+local _ = MojoSetup.translate
+local app_title = '@FULLNAME@'
 
 Setup.Package
 {
-    vendor = "@VENDOR@", -- vendor name (mustn't contain any spaces)
-    id = "@SHORTNAME@", -- short ID of the application name (the install folder)
+    vendor = "@VENDOR@",
+    id = "@SHORTNAME@",
     description = app_title,
     version = "@VERSION@",
-    splash = "@SPLASH@", -- an image in the meta folder to display.
+    splash = "@SPLASH@",
     splashpos = "top",
     superuser = false,
     write_manifest = true,
@@ -19,7 +19,7 @@ Setup.Package
         MojoSetup.info.homedir
     },
 
-    Setup.Readme -- a readme file (can occur multiple times)
+    Setup.Readme
     {
         description = _("Readme"),
         source = _("README.mojo")
@@ -30,7 +30,7 @@ Setup.Package
         value = true,
         required = true,
         disabled = false,
-        bytes = INSTALL_SIZE,
+        bytes = @SIZE@,
         description = app_title,
 
         Setup.File
@@ -49,11 +49,10 @@ Setup.Package
             genericname = app_title,
             tooltip = _(app_title),
             builtin_icon = false,
-            icon = "@ICON@", -- Change the PNG Icon (relative to install dir)
-            commandline = "%0/@START@", -- Executable name (%0 is install dir)
+            icon = "@ICON@",
+            commandline = "%0/@START@",
             workingdir = "%0",
             category = "Misc;"
         },
     }
 }
-
