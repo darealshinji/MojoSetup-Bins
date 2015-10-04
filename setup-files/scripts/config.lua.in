@@ -1,0 +1,59 @@
+local INSTALL_SIZE = @SIZE@ -- Change to the size of the data folder in bytes
+local _ = MojoSetup.translate
+
+local app_title = '@FULLNAME@' -- Change this to the application's full name
+
+Setup.Package
+{
+    vendor = "@VENDOR@", -- vendor name (mustn't contain any spaces)
+    id = "@SHORTNAME@", -- short ID of the application name (the install folder)
+    description = app_title,
+    version = "@VERSION@",
+    splash = "@SPLASH@", -- an image in the meta folder to display.
+    splashpos = "top",
+    superuser = false,
+    write_manifest = true,
+    support_uninstall = true,
+    recommended_destinations =
+    {
+        MojoSetup.info.homedir
+    },
+
+    Setup.Readme -- a readme file (can occur multiple times)
+    {
+        description = _("Readme"),
+        source = _("README.mojo")
+    },
+
+    Setup.Option
+    {
+        value = true,
+        required = true,
+        disabled = false,
+        bytes = INSTALL_SIZE,
+        description = app_title,
+
+        Setup.File
+        {
+            -- wildcards = "*";
+            -- filter = function(fn)
+            --     return string.gsub(fn, "^", "", 1), nil
+            -- end,
+            source = "base:///files.tar.xz",
+        },
+
+        Setup.DesktopMenuItem
+        {
+            disabled = false,
+            name = app_title,
+            genericname = app_title,
+            tooltip = _(app_title),
+            builtin_icon = false,
+            icon = "@ICON@", -- Change the PNG Icon (relative to install dir)
+            commandline = "%0/@START@", -- Executable name (%0 is install dir)
+            workingdir = "%0",
+            category = "Misc;"
+        },
+    }
+}
+
