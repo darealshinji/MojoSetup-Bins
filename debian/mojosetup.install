@@ -1,0 +1,2 @@
+debian/bin/mojosetup            /usr/bin
+bin example setup-files *.sh    /usr/share/mojosetup

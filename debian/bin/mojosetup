@@ -1,0 +1,42 @@
+#!/bin/sh -e
+
+if [ -d mojosetup ]; then
+  echo "Error: directory \`mojosetup' already exists"
+  exit 1
+fi
+
+echo "Copy files..."
+
+cp -r /usr/share/mojosetup .
+cd mojosetup
+
+gunzip example/helloworld/helloworld.gz
+chmod a+x example/helloworld/helloworld
+ln -s /usr/share/doc/mojosetup/examples example/more\ examples
+
+lib32=/usr/lib/i386-linux-gnu/mojosetup
+lib64=/usr/lib/x86_64-linux-gnu/mojosetup
+
+if [ ! -d $lib32 ] && [ ! -d $lib64 ]; then
+  echo "Warning: no precompiled binaries available."
+  echo "You can build them from source by running \`./build-binaries.sh'"
+  exit 0
+fi
+
+if [ -d $lib32 ]; then
+  mkdir -p setup-files/bin/x86/guis
+  cp $lib32/*.so setup-files/bin/x86/guis/
+  cp $lib32/mojosetup setup-files/bin/x86/
+  cp $lib32/make_self_extracting bin/make_self_extracting.x86
+  cp $lib32/mojoluac bin/mojoluac.x86
+fi
+if [ -d $lib64 ]; then
+  mkdir -p setup-files/bin/x86_64/guis
+  cp $lib64/*.so setup-files/bin/x86_64/guis/
+  cp $lib64/mojosetup setup-files/bin/x86_64/
+  cp $lib64/make_self_extracting bin/make_self_extracting.x86_64
+  cp $lib64/mojoluac bin/mojoluac.x86_64
+fi
+
+echo "Done."
+

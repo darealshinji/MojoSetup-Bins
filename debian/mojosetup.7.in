@@ -1,0 +1,8 @@
+.TH MOJOSETUP "7" "October 2015" "hg-800"
+
+.SH NAME
+MojoSetup \- a portable, flexible installation application
+
+.SH DESCRIPTION
+.nf
+\f[C]

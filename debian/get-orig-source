@@ -1,0 +1,35 @@
+#!/bin/sh
+
+url="https://github.com/darealshinji/MojoSetup-Bins.git"
+
+git clone --branch master --depth 1 "$url" mojosetup-src
+cd mojosetup-src
+git clone --branch mojosetup-src --depth 1 "$url" src
+
+rev="$(cat bin/mojosetup-hg-revision)"
+date="$(git log -1 --format=%ci | head -c10 | sed -e 's/-//g' | tail -c6)"
+version="0.0.${rev}+${date}"
+
+# vcs directories
+rm -rf .git src/.git
+
+# pre-compiled binaries
+rm -rf setup-files/bin bin/*.x86*
+
+# non-free images
+rm -f src/examples/duke3d/data/duke3d.png `find src/examples/ -name *.bmp`
+rmdir -p --ignore-fail-on-non-empty `find src/examples/ -type d`
+
+# OSX files (includes non-free package icon)
+rm -rf src/misc/MacAppBundleSkeleton src/misc/MojoSetup.xib
+
+# unused
+rm -rf src/lua/doc
+
+# duplicate files
+rm -rf src/meta src/scripts
+
+cd ..
+mv mojosetup-src mojosetup-${version}
+tar cvfJ mojosetup_${version}.orig.tar.xz mojosetup-${version}
+

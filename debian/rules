@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+
+%:
+	dh $@ 
+
+override_dh_auto_clean:
+	dh_auto_clean -Dexample/helloworld
+	rm -rf build build-minsize mojosetup.7
+
+override_dh_auto_build:
+	dh_auto_build -Dexample/helloworld
+	./build-binaries.sh
+
+	cat debian/mojosetup.7.in > mojosetup.7
+	sed 's|^\.\.\.| ...|g; /^\/\//d' src/docs.txt >> mojosetup.7
+	printf '\\f[]\n.fi\n' >> mojosetup.7
+
+override_dh_install:
+	dh_install
+	cd debian/mojosetup-lib/usr/lib/ && mv DEB_HOST_MULTIARCH $(DEB_HOST_MULTIARCH)
+	cd debian/mojosetup/usr/share/mojosetup/example/helloworld && \
+		chmod a-x helloworld && gzip -f9 helloworld
+
+override_dh_installexamples:
+	dh_installexamples -Xbuild-example.sh
+
+override_dh_shlibdeps:
+	dh_shlibdeps -X.so
+

@@ -1,0 +1,4 @@
+build/make_self_extracting   /usr/lib/DEB_HOST_MULTIARCH/mojosetup
+build/mojoluac               /usr/lib/DEB_HOST_MULTIARCH/mojosetup
+build-minsize/*.so           /usr/lib/DEB_HOST_MULTIARCH/mojosetup
+build-minsize/mojosetup      /usr/lib/DEB_HOST_MULTIARCH/mojosetup

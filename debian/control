@@ -1,0 +1,41 @@
+Source: mojosetup
+Section: devel
+Priority: optional
+Maintainer: djcj <djcj@gmx.de>
+Build-Depends:
+ debhelper (>= 9),
+ cmake (>= 2.6~),
+ pkg-config,
+ libgtk2.0-dev,
+ libncurses5-dev,
+ libncursesw5-dev
+Standards-Version: 3.9.5
+Homepage: http://www.icculus.org/mojosetup/
+Vcs-Git: https://github.com/darealshinji/MojoSetup-Bins.git
+Vcs-Browser: https://github.com/darealshinji/MojoSetup-Bins
+
+Package: mojosetup
+Architecture: amd64 i386
+Depends:
+ ${misc:Depends},
+ mojosetup-lib (= ${binary:Version})
+Recommends:
+ mojosetup-lib:i386 (= ${binary:Version}) [amd64]
+Suggests:
+ mojosetup-lib:amd64 (= ${binary:Version}) [i386]
+Description: generate MojoSetup binaries
+ MojoSetup is a portable, flexible installation application.
+
+Package: mojosetup-lib
+Architecture: amd64 i386
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Pre-Depends:
+ ${misc:Pre-Depends}
+Suggests:
+ libgtk2.0-0,
+ libncursesw5
+Description: generate MojoSetup binaries - multiarch files
+ MojoSetup is a portable, flexible installation application.
+
