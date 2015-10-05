@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+# Written by djcj <djcj@gmx.de> and released into the Public Domain.
+
 build () {
   reltype="$1"
   rev="$2"
