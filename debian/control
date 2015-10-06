@@ -21,9 +21,9 @@ Depends:
  ${shlibs:Depends},
  mojosetup-lib (= ${binary:Version})
 Recommends:
- mojosetup-lib:i386 (= ${binary:Version}) [amd64]
+ mojosetup-lib:i386 [amd64]
 Suggests:
- mojosetup-lib:amd64 (= ${binary:Version}) [i386]
+ mojosetup-lib:amd64 [i386]
 Description: generate MojoSetup binaries
  MojoSetup is a portable, flexible installation application.
 
