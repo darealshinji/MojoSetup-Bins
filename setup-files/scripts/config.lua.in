@@ -39,7 +39,7 @@ Setup.Package
             -- filter = function(fn)
             --     return string.gsub(fn, "^", "", 1), nil
             -- end,
-            source = "base:///files.tar.xz",
+            source = "base:///files.tar.@COMPRESSION@",
         },
 
         Setup.DesktopMenuItem

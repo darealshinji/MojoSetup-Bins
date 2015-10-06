@@ -7,7 +7,13 @@ echo $arch | grep "amd64" >/dev/null && arch="x86_64"
 
 args="$*"
 
-tar xfJ data.tar.xz
+if [ -f data.tar.bz2 ]; then
+  tar xfj data.tar.bz2
+elif [ -f data.tar.xz ]; then
+  tar xfJ data.tar.xz
+else
+  tar xfz data.tar.gz
+fi
 
 if [ ! -d "./bin/$arch/" -a "$arch" != "x86" ]; then
   echo "Warning: No binaries for \`$arch' found, trying to default to x86..."

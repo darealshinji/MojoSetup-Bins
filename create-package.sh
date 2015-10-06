@@ -21,17 +21,20 @@
 # SOFTWARE.
 
 scriptpath="$(dirname "$(readlink -f "$0")")"
-defaultsplash=no
-if [ "`uname -m`" = "x86_64" ]; then
-  arch="x86_64"
-else
-  arch="x86"
-fi
 
 usage() {
 cat << EOF
 
-  Usage: $0 <directory>
+  Usage: $0 [options] <directory>
+
+  Options:
+    --compression=METHOD       compression method used for the app/game files
+                               available: xz, gz(ip), bz(ip)2; default: xz
+    --mojo-compression=METHOD  compression method used for the setup files
+                               available: xz, gz(ip), bz(ip)2; default: bzip2
+    --pause                    pause before compressing files to allow final
+                               manual modifications
+    --help, -h                 display this message
 
   Environment variables:
     FULLNAME     full name of the application
@@ -52,19 +55,55 @@ errorExit() {
   exit 1
 }
 
+
+# parse command line arguments
 case x"$1" in
   x|x--help|x-help|x-h|x-\?)
     usage ;;
 esac
-test -d "$1" || errorExit "\`$1' is not a directory"
 
-size=$(du -bs "$1" | awk '{print $1}')
+pause="no"
+compression="xz"
+mojocompression="bz2"
+for opt; do
+  optarg="${opt#*=}"
+  case "$opt" in
+    --compression=*)
+      compression="$optarg"
+      ;;
+    --mojo-compression=*)
+      mojocompression="$optarg"
+      ;;
+    --pause)
+      pause="yes"
+      ;;
+    *)
+      dir="$optarg"
+      ;;
+  esac
+done
 
+test -n "$dir" || errorExit "no target directory specified"
+test -d "$dir" || errorExit "\`$dir' is not a directory"
+size=$(du -bs "$dir" | awk '{print $1}')
+
+case $compression in
+  bz*) z=j; ext=bz2 ;;
+  xz*) z=J; ext=xz ;;
+  *)   z=z; ext=gz ;;
+esac
+case $mojocompression in
+  bz*) zm=j; extm=bz2 ;;
+  xz*) zm=J; extm=xz ;;
+  *)   zm=z; extm=gz ;;
+esac
+
+
+# get information about the program
 if [ -z "$FULLNAME" -o -z "$SHORTNAME" -o -z "$VERSION" -o -z "$VENDOR" -o -z "$START" -o -z "$ICON" -o -z "$SPLASH" ] ; then
   echo "Please enter some information about the program"
   echo ""
 fi
-
 if [ -z "$FULLNAME" ] ; then
   read -p "Full name: " FULLNAME
   test x"$FULLNAME" = x && errorExit "Enter a full name"
@@ -90,6 +129,7 @@ if [ -z "$ICON" ] ; then
   read -p "Menu icon (inside the directory): " ICON
   test x"$ICON" = x && errorExit "Enter an icon filename"
 fi
+defaultsplash=no
 if [ -z "$SPLASH" ] ; then
   echo ""
   echo "Path to a splash header image to be displayed during the"
@@ -104,12 +144,41 @@ else
   splash_img="$SPLASH"
 fi
 
+
+# create a temporary working directory
 tmp="$PWD/${SHORTNAME}~tmp.mojo"
 readme="$tmp/data/README.mojo"
 rm -rf "$tmp"
 cp -r "$scriptpath/setup-files" "$tmp"
 mkdir -p "$tmp/data"
 
+
+# copy the splash image file
+if [ $defaultsplash = no ]; then
+  if [ -f "$splash_img" ]; then
+    rm -f "$tmp/meta/splash.png"
+    cp "$splash_img" "$tmp/meta"
+  else
+    errorExit "\`$splash_img' not found"
+  fi
+fi
+
+
+# generate our lua config file
+sed -e "s|@SIZE@|$size|g; \
+        s|@FULLNAME@|$FULLNAME|g; \
+        s|@VENDOR@|$VENDOR|g; \
+        s|@SHORTNAME@|$SHORTNAME|g; \
+        s|@VERSION@|$VERSION|g; \
+        s|@START@|$START|g; \
+        s|@ICON@|$ICON|g; \
+        s|@SPLASH@|$(basename "$splash_img")|g; \
+        s|@COMPRESSION@|$ext|g; \
+" "$tmp/scripts/config.lua.in" > "$tmp/scripts/config.lua"
+rm -f "$tmp/scripts/config.lua.in"
+
+
+# ask the user to write a readme
 if [ -z "$README" ] ; then
   touch $readme
   echo ""
@@ -120,32 +189,29 @@ else
   cp "$README" $readme
 fi
 
-sed -e "s|@SIZE@|$size|g; \
-        s|@FULLNAME@|$FULLNAME|g; \
-        s|@VENDOR@|$VENDOR|g; \
-        s|@SHORTNAME@|$SHORTNAME|g; \
-        s|@VERSION@|$VERSION|g; \
-        s|@START@|$START|g; \
-        s|@ICON@|$ICON|g; \
-        s|@SPLASH@|$(basename "$splash_img")|g; \
-" "$tmp/scripts/config.lua.in" > "$tmp/scripts/config.lua"
-rm -f "$tmp/scripts/config.lua.in"
 
-if [ $defaultsplash = no ]; then
-  if [ -f "$splash_img" ]; then
-    rm -f "$tmp/meta/splash.png"
-    cp "$splash_img" "$tmp/meta"
-  else
-    errorExit "\`$splash_img' not found"
-  fi
+# pause if the script was run with `--pause'
+if [ "$pause" = "yes" ] ; then
+  echo ""
+  echo "You can now add some manual modifications."
+  echo "Press any key to continue."
+  read -p "" -n1 -s
 fi
 
+
+# compress files
 echo ""
-echo "Compress files..."
-cd "$1" && tar cvfJ "$tmp/data/files.tar.xz" *
-cd "$tmp" && tar cvfJ data.tar.xz bin meta scripts && rm -rf bin meta scripts
+echo "Create data/files.tar.$ext:"
+cd "$dir" && tar cvf$z "$tmp/data/files.tar.$ext" *
+echo ""
+echo "Create data.tar.$extm:"
+cd "$tmp" && tar cvf$zm data.tar.$extm bin meta scripts && rm -rf bin meta scripts
 cd "$tmp/.."
 
+
+# generate sfx archive with makeself
+echo ""
+echo ""
 "$scriptpath/bin/makeself.sh" \
   --header "$scriptpath/bin/makeself-header" \
   --nox11 \
