@@ -16,17 +16,17 @@ rm -rf .git src/.git
 # pre-compiled binaries
 rm -rf setup-files/bin bin/*.x86*
 
-# non-free images
+# non-free
 rm -f src/examples/duke3d/data/duke3d.png `find src/examples/ -name *.bmp`
 rmdir -p --ignore-fail-on-non-empty `find src/examples/ -type d`
 
-# OSX files (includes non-free package icon)
+# OSX (includes non-free package icon)
 rm -rf src/misc/MacAppBundleSkeleton src/misc/MojoSetup.xib
 
 # unused
 rm -rf src/lua/doc
 
-# duplicate files
+# duplicate
 rm -rf src/meta src/scripts
 
 cd ..

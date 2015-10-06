@@ -1,2 +1,3 @@
 debian/bin/mojosetup            /usr/bin
+mojosetup.helloworld            /usr/lib
 bin example setup-files *.sh    /usr/share/mojosetup

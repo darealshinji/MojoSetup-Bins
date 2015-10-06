@@ -10,8 +10,7 @@ echo "Copy files..."
 cp -r /usr/share/mojosetup .
 cd mojosetup
 
-gunzip example/helloworld/helloworld.gz
-chmod a+x example/helloworld/helloworld
+cp /usr/lib/mojosetup.helloworld example/helloworld/helloworld
 ln -s /usr/share/doc/mojosetup/examples example/more\ examples
 
 lib32=/usr/lib/i386-linux-gnu/mojosetup

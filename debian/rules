@@ -8,10 +8,11 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 override_dh_auto_clean:
 	dh_auto_clean -Dexample/helloworld
-	rm -rf build build-minsize mojosetup.7
+	rm -rf build build-minsize mojosetup.helloworld mojosetup.7
 
 override_dh_auto_build:
 	dh_auto_build -Dexample/helloworld
+	mv example/helloworld/helloworld mojosetup.helloworld
 	./build-binaries.sh
 
 	cat debian/mojosetup.7.in > mojosetup.7
@@ -21,12 +22,12 @@ override_dh_auto_build:
 override_dh_install:
 	dh_install
 	cd debian/mojosetup-lib/usr/lib/ && mv DEB_HOST_MULTIARCH $(DEB_HOST_MULTIARCH)
-	cd debian/mojosetup/usr/share/mojosetup/example/helloworld && \
-		chmod a-x helloworld && gzip -f9 helloworld
 
 override_dh_installexamples:
 	dh_installexamples -Xbuild-example.sh
 
 override_dh_shlibdeps:
-	dh_shlibdeps -X.so
+	mv debian/mojosetup-lib/usr/lib/$(DEB_HOST_MULTIARCH)/mojosetup/*.so debian/mojosetup/usr/bin
+	dh_shlibdeps
+	mv debian/mojosetup/usr/bin/*.so debian/mojosetup-lib/usr/lib/$(DEB_HOST_MULTIARCH)/mojosetup
 
