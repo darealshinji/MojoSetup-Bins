@@ -1,5 +1,19 @@
 #!/bin/sh -e
 
+case x"$1" in
+  x--help|x-help|x-h|x-\?)
+    cat << EOF
+
+  Usage: $0 [--help]
+
+  Copies all files required to build a MojoSetup installer into
+  a \`mojosetup' subdirectory of the current working directory.
+
+EOF
+    exit 0
+    ;;
+esac
+
 if [ -d mojosetup ]; then
   echo "Error: directory \`mojosetup' already exists"
   exit 1

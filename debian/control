@@ -12,7 +12,7 @@ Build-Depends:
 Standards-Version: 3.9.5
 Homepage: http://www.icculus.org/mojosetup/
 Vcs-Git: https://github.com/darealshinji/MojoSetup-Bins.git
-Vcs-Browser: https://github.com/darealshinji/MojoSetup-Bins
+Vcs-Browser: https://github.com/darealshinji/MojoSetup-Bins/tree/debian
 
 Package: mojosetup
 Architecture: amd64 i386
