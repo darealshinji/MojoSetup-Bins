@@ -23,10 +23,8 @@ fi
 echo "CPU Arch: $arch"
 
 dir="bin/$arch"
-mojobin="$dir/mojosetup"
 
-cp "$mojobin" "`pwd`"
+cp "$dir/mojosetup" "`pwd`"
 cp -r "$dir/guis" "`pwd`"
 chmod +x mojosetup
 "`pwd`/mojosetup" $args
-
