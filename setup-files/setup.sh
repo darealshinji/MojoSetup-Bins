@@ -1,11 +1,11 @@
 #!/bin/sh -e
 
+args="$*"
+
 arch=`uname -m`
 echo $arch | grep "i.86" >/dev/null && arch="x86"
 echo $arch | grep "86pc" >/dev/null && arch="x86"
 echo $arch | grep "amd64" >/dev/null && arch="x86_64"
-
-args="$*"
 
 if [ -f data.tar.bz2 ]; then
   tar xfj data.tar.bz2
@@ -15,11 +15,10 @@ else
   tar xfz data.tar.gz
 fi
 
-if [ ! -d "./bin/$arch/" -a "$arch" != "x86" ]; then
+if [ ! -d "bin/$arch" -a "$arch" != "x86" ]; then
   echo "Warning: No binaries for \`$arch' found, trying to default to x86..."
   arch="x86"
 fi
-
 echo "CPU Arch: $arch"
 
 dir="bin/$arch"
