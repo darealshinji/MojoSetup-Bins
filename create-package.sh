@@ -118,7 +118,7 @@ if [ -z "$VERSION" ] ; then
   test x"$VERSION" = x && errorExit "Enter a version"
 fi
 if [ -z "$VENDOR" ] ; then
-  read -p "Organization/vendor (w/o spaces): " VENDOR
+  read -p "Organization/vendor: " VENDOR
   test x"$VENDOR" = x && errorExit "Enter the name of the copyright holder"
 fi
 if [ -z "$START" ] ; then
@@ -136,12 +136,7 @@ if [ -z "$SPLASH" ] ; then
   read -p "installation (leave empty if you don't want to use one): " SPLASH
   if [ x"$SPLASH" = x ]; then
     defaultsplash=yes
-    splash_img=splash.png
-  else
-    splash_img="$SPLASH"
   fi
-else
-  splash_img="$SPLASH"
 fi
 
 
@@ -155,16 +150,20 @@ mkdir -p "$tmp/data"
 
 # copy the splash image file
 if [ $defaultsplash = no ]; then
-  if [ -f "$splash_img" ]; then
+  if [ -f "$SPLASH" ]; then
     rm -f "$tmp/meta/splash.png"
-    cp "$splash_img" "$tmp/meta"
+    cp "$SPLASH" "$tmp/meta"
+    SPLASH="$(basename "$SPLASH")"
   else
-    errorExit "\`$splash_img' not found"
+    errorExit "\`$SPLASH' not found"
   fi
+else
+  SPLASH="splash.png"
 fi
 
 
 # generate our lua config file
+VENDOR="$(echo "$VENDOR" | tr -d -c '[:alnum:].+-')"
 sed -e "s|@SIZE@|$size|g; \
         s|@FULLNAME@|$FULLNAME|g; \
         s|@VENDOR@|$VENDOR|g; \
@@ -172,7 +171,7 @@ sed -e "s|@SIZE@|$size|g; \
         s|@VERSION@|$VERSION|g; \
         s|@START@|$START|g; \
         s|@ICON@|$ICON|g; \
-        s|@SPLASH@|$(basename "$splash_img")|g; \
+        s|@SPLASH@|$SPLASH|g; \
         s|@COMPRESSION@|$ext|g; \
 " "$tmp/scripts/config.lua.in" > "$tmp/scripts/config.lua"
 rm -f "$tmp/scripts/config.lua.in"
