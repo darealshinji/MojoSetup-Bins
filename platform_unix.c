@@ -1393,8 +1393,8 @@ boolean MojoPlatform_spawnTerminal(void)
 
     // urgh
     static const char *terms[] = {
-        "gnome-terminal", "konsole", "kvt", "xterm", "rxvt",
-        "dtterm", "eterm", "Eterm", "aterm"
+        "mate-terminal", "gnome-terminal", "konsole", "kvt",
+        "xterm", "rxvt", "dtterm", "eterm", "Eterm", "aterm"
     };
 
     char *binpath = MojoPlatform_appBinaryPath();
@@ -1408,7 +1408,10 @@ boolean MojoPlatform_spawnTerminal(void)
     if (getenv("DISPLAY") == NULL)
         return false;  // don't bother if we don't have X.
 
-    else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)  // this is gnome?
+    else if (getenv("MATE_DESKTOP_SESSION_ID") != NULL)  // MATE?
+        tryfirst = "mate-terminal";
+
+    else if (getenv("GNOME_DESKTOP_SESSION_ID") != NULL)  // this is gnome/unity?
         tryfirst = "gnome-terminal";
 
     else if (getenv("KDE_FULL_SESSION") != NULL)  // this KDE >= 3.2?
@@ -1425,12 +1428,13 @@ boolean MojoPlatform_spawnTerminal(void)
             continue;
 
         // !!! FIXME: hack. I'm sure other terminal emulators have needs, too.
-        is_gnome_term = (strcmp(trythis, "gnome-terminal") == 0);
+        is_gnome_term = (strcmp(trythis, "gnome-terminal") == 0 ||
+                         strcmp(trythis, "mate-terminal") == 0);
 
         argv[argi++] = trythis;
-        argv[argi++] = is_gnome_term ? "--title" : "-title";
+        argv[argi++] = is_gnome_term ? "-t" : "-title";
         argv[argi++] = "MojoSetup";
-        argv[argi++] = is_gnome_term ? "-x" : "-e";
+        argv[argi++] = "-e";
         argv[argi++] = binpath;
         argv[argi++] = "-notermspawn=1";
         assert(argi-1 <= max_added_args);
