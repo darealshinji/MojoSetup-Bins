@@ -15,6 +15,14 @@ build () {
     -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS -Wl,-Bsymbolic-functions -Wl,-z,noexecstack" \
     -DCMAKE_VERBOSE_MAKEFILE="ON"
 
+  # from a comment in CMakeLists.txt:
+  #  # In order to reduce the GTK2 library dependencies at link time, we only link against 'gtk-x11-2.0'.
+  #  # This is more portable, as the dynamic linker/loader will take care of the other library dependencies at run time.
+  #
+  # I'm very skeptical about this and wouldn't rely on ld.so to resolve all
+  # symbols through gtk-x11-2.0's dependencies. Afaik GTK+2 is quite downwards
+  # compatible and usually installed by default on all typical desktop distributions.
+  # And if something doesn't work right, a Mojo installer can still be run from command line.
   sed -i "s|-lgtk-x11-2\.0|`pkg-config --libs gtk+-2.0`|" CMakeFiles/mojosetupgui_gtkplus2.dir/link.txt
 
   for f in `find CMakeFiles -type f -name flags.make`; do
@@ -34,7 +42,7 @@ rm -rf build build-minsize
 mkdir build build-minsize
 
 rev="$(cat bin/mojosetup-hg-revision)"
-CFLAGS_common="-Wformat -Werror=format-security -fno-strict-aliasing -D_FORTIFY_SOURCE=2 $(pkg-config --cflags-only-I gtk+-2.0)"
+CFLAGS_common="-Wformat -Werror=format-security -fno-strict-aliasing -D_FORTIFY_SOURCE=2"
 LDFLAGS_common="-Wl,-O1 -Wl,-z,defs -Wl,--as-needed"
 
 cd build
