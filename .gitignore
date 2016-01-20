@@ -3,3 +3,14 @@
 /example/helloworld/helloworld
 /example/helloworld-1.0-install.sh
 /src
+/bin/make_self_extracting.x86
+/bin/make_self_extracting.x86_64
+/bin/mojoluac.x86
+/bin/mojoluac.x86_64
+/bin/mojosetup-hg-revision
+/setup-files/bin/x86/guis/libmojosetupgui_gtkplus2.so
+/setup-files/bin/x86/guis/libmojosetupgui_ncurses.so
+/setup-files/bin/x86/mojosetup
+/setup-files/bin/x86_64/guis/libmojosetupgui_gtkplus2.so
+/setup-files/bin/x86_64/guis/libmojosetupgui_ncurses.so
+/setup-files/bin/x86_64/mojosetup

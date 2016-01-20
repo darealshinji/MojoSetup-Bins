@@ -42,20 +42,39 @@ rm -rf build build-minsize
 mkdir build build-minsize
 
 rev="$(cat bin/mojosetup-hg-revision)"
-CFLAGS_common="-Wformat -Werror=format-security -fno-strict-aliasing -D_FORTIFY_SOURCE=2"
+CFLAGS_common="-Wformat -Werror=format-security -fstack-protector-all -fno-strict-aliasing -D_FORTIFY_SOURCE=2"
 LDFLAGS_common="-Wl,-O1 -Wl,-z,defs -Wl,--as-needed"
 
 cd build
-CFLAGS="$CFLAGS_common -fstack-protector-all"
+CFLAGS="$CFLAGS_common"
 LDFLAGS="-s $LDFLAGS_common -Wl,-z,relro"
 build Release $rev "$CFLAGS" "$LDFLAGS"
 
 cd ../build-minsize
 CFLAGS="$CFLAGS_common -ffunction-sections -fdata-sections"
-LDFLAGS="$LDFLAGS_common -Wl,--gc-sections"
+LDFLAGS="$LDFLAGS_common -Wl,-z,norelro -Wl,--gc-sections"
 build MinSizeRel $rev "$CFLAGS" "$LDFLAGS"
 
 strip --strip-all --remove-section=.comment --remove-section=.note \
   libmojosetupgui_gtkplus2.so libmojosetupgui_ncurses.so \
   make_self_extracting mojoluac mojosetup
+cd ..
+
+arch="$(file -b build/mojosetup | cut -d, -f2)"
+if [ "$arch" = " Intel 80386" ]; then
+  target="x86"
+elif [ "$arch" = " x86-64" ]; then
+  target="x86_64"
+else
+  echo "error: unknown or unsupported architecture"
+  exit 1
+fi
+
+set -v
+
+cp -f build/make_self_extracting bin/make_self_extracting.$target
+cp -f build/mojoluac bin/mojoluac.$target
+mkdir -p setup-files/bin/$target/guis
+cp -f build-minsize/*.so setup-files/bin/$target/guis
+cp -f build-minsize/mojosetup setup-files/bin/$target
 
