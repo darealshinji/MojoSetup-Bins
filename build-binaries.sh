@@ -34,7 +34,7 @@ build () {
 }
 
 if [ ! -d "src" ]; then
-  hg clone "https://hg.icculus.org/icculus/mojosetup" src
+  hg --debug -v clone "https://hg.icculus.org/icculus/mojosetup" src
   cd src && hg id -n > ../bin/mojosetup-hg-revision
   cd ..
 fi
@@ -70,11 +70,11 @@ else
   exit 1
 fi
 
-set -v
-
-cp -f build/make_self_extracting bin/make_self_extracting.$target
-cp -f build/mojoluac bin/mojoluac.$target
+cp -vf build/make_self_extracting bin/make_self_extracting.$target
+cp -vf build/mojoluac bin/mojoluac.$target
 mkdir -p setup-files/bin/$target/guis
-cp -f build-minsize/*.so setup-files/bin/$target/guis
-cp -f build-minsize/mojosetup setup-files/bin/$target
+cp -vf build-minsize/*.so setup-files/bin/$target/guis
+cp -vf build-minsize/mojosetup setup-files/bin/$target
+cp -vrf src/scripts setup-files
+rm -vf setup-files/scripts/config.lua
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright (c) 2015, djcj <djcj@gmx.de>
+# Copyright (c) 2015-2016, djcj <djcj@gmx.de>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -173,8 +173,7 @@ sed -e "s|@SIZE@|$size|g; \
         s|@ICON@|$ICON|g; \
         s|@SPLASH@|$SPLASH|g; \
         s|@COMPRESSION@|$ext|g; \
-" "$tmp/scripts/config.lua.in" > "$tmp/scripts/config.lua"
-rm -f "$tmp/scripts/config.lua.in"
+" "$scriptpath/config.lua.in" > "$tmp/scripts/config.lua"
 
 
 # ask the user to write a readme
